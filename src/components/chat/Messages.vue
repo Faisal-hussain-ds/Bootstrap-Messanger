@@ -959,7 +959,7 @@ export default {
       event.preventDefault();
       console.log(this.inputText, "text");
       this.responseNotSend=false;
-     this.error('Please Add some text')
+     this.error('Please Add some text');
       // var dataa = {
       //   model: "gpt-3.5-turbo",
       //   messages: [{ role: "user", content: `${this.inputText}` }],

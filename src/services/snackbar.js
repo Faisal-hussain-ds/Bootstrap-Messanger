@@ -14,6 +14,7 @@ export default {
             });
         };
         app.config.globalProperties.error = (message) => {
+      
             EventBus.emit("show-notification-bar", {
                 type: "negative",
                 message: message,

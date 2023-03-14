@@ -22,6 +22,7 @@
       const $q = useQuasar();
       return {
         showNotif(message, type) {
+
           $q.notify({
             message: message,
             color: type,
