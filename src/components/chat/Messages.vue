@@ -213,11 +213,11 @@
         <!-- All message content start here -->
 
         <!-- Chat: Content -->
-        <div class="chat-body hide-scrollbar flex-1 h-100">
-          <div class="chat-body-inner">
-            <div class="py-6 py-lg-12">
+        <div class="chat-body hide-scrollbar flex-1 h-100" id="containerDiv" ref="msgContainer">
+          <div class="chat-body-inner" >
+            <div class="py-6 py-lg-12 mb-15 pb-15">
               <!-- Message -->
-              <div class="message">
+              <div class="message" v-for="list in responseArr" :key="list">
                 <a
                   href="#"
                   data-bs-toggle="modal"
@@ -236,7 +236,7 @@
                       <div class="message-text">
                         <VMarkdownView
                           :mode="mode"
-                          :content="content"
+                          :content="list.ans.choices[0].message.content"
                           :htmlPreview="true"
                           class="q-pa-md pa-5"
                         ></VMarkdownView>
@@ -245,14 +245,9 @@
                     </div>
                   </div>
                   <div class="message-footer">
-                    <span class="extra-small text-muted">08:45 PM</span>
+                    <span class="extra-small text-muted">09:45 PM</span>
                   </div>
                 </div>
-              </div>
-
-              <!-- Divider -->
-              <div class="message-divider">
-                <small class="text-muted">Monday, Sep 16</small>
               </div>
             </div>
           </div>
@@ -372,50 +367,64 @@
 </template>
 
 <script>
-import axios from "axios";
+  import axios from "axios";
+   import { EventBus } from "@/js/helpers/EventBus.js";
+  import { ref } from "vue";
 
-import { ref } from "vue";
+  import { VMarkdownView } from "vue3-markdown";
+  import "vue3-markdown/dist/style.css";
 
-import { VMarkdownView } from "vue3-markdown";
-import "vue3-markdown/dist/style.css";
-
-const mycontent = `Hi, How can I help you?`;
-export default {
-  name: "ChatMessages",
-  setup() {
-    return {
-      content: ref(mycontent),
-      mode: "light",
-      inputText: ref(""),
-      responseNotSend: ref(true),
-      responseArr: ref([]),
-    };
-  },
-  components: { VMarkdownView },
-  methods: {
-    async SendRequest(event) {
-      event.preventDefault();
-      this.responseNotSend = false;
-      console.log(`Bearer ${localStorage.getItem("token")}`, "token");
-      var thiss = this;
-      axios
-        .post("http://localhost:4001/conv-chat", {
-          id: "6401e30dcd247c47d8a0ab40",
-          query: thiss.inputText,
-          token: localStorage.getItem("token"),
-        })
-        .then(function (response) {
-          console.log(response, "this is res");
-          thiss.responseNotSend = true;
-          thiss.inputText = "";
-          thiss.content = response.data.ans.choices[0].message.content;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+  const mycontent = `Hi, How can I help you?`;
+  export default {
+    name: "ChatMessages",
+    setup() {
+      return {
+        content: ref(mycontent),
+        mode: "light",
+        inputText: ref(""),
+        responseNotSend: ref(true),
+        responseArr: ref([]),
+      };
     },
-  },
-};
+    components: { VMarkdownView },
+    methods: {
+      async SendRequest(event) {
+        event.preventDefault();
+        this.responseNotSend = false;
+        console.log(`Bearer ${localStorage.getItem("token")}`, "token");
+        var thiss = this;
+        axios
+          .post("http://localhost:4001/conv-chat", {
+            id: "6401e30dcd247c47d8a0ab40",
+            query: thiss.inputText,
+            token: localStorage.getItem("token"),
+          })
+          .then(function (response) {
+            console.log(response, "this is res");
+            thiss.responseNotSend = true;
+            thiss.inputText = "";
+            thiss.content = response.data;
+            thiss.responseArr.push(thiss.content);
+
+            var container = thiss.$el.querySelector("#containerDiv");
+            container.scrollTop = container.scrollHeight;
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+
+      
+    },
+    mounted()
+    {
+     
+      EventBus.on('conversation-messages',(data)=>{
+        this.responseArr=data;
+      })
+    }
+  };
 </script>
 
 <style scoped>
