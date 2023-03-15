@@ -9,7 +9,9 @@
  import axios from "axios";
  export default {
    install(app) {
-     const baseUrls = process.env.BACKEND_URL;
+     const baseUrls = "http://localhost:4001";
+    //  const baseUrls = process.env.BACKEND_URL;
+     console.log(baseUrls,'This is url of backend');
      app.config.globalProperties.apiRequest = (url, type, method, data) => {
        // convert object to formData
      var form_data = new FormData();
@@ -36,12 +38,15 @@
            "Content-Type": "multipart/form-data",
          },
        };
+
+       console.log('This is axios options', options);
        return new Promise((resolve, reject) => {
          axios(options)
            .then((res) => {
              resolve(res);
            })
            .catch((error) => {
+             console.log(error,'this is error in apireq');
              EventBus.emit("show-notification-bar", {
                type: "negative",
                message: error.response.data.message,

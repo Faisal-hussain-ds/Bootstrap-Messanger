@@ -214,7 +214,7 @@
 
         <!-- Chat: Content -->
         <div class="chat-body hide-scrollbar flex-1 h-100">
-          {{responseArr}}
+          {{ responseArr }}
           <div class="chat-body-inner">
             <div class="py-6 py-lg-12">
               <!-- Message -->
@@ -519,10 +519,13 @@
                 <div class="message-inner">
                   <div class="message-body">
                     <div class="message-content">
-                      <div class="message-text" v-for="message in responseArr" :key="message">
-                        
+                      <div
+                        class="message-text"
+                        v-for="message in responseArr"
+                        :key="message"
+                      >
                         <p>
-                          {{message}}
+                          {{ message }}
                         </p>
                       </div>
                       <!-- Dropdown -->
@@ -928,8 +931,8 @@
                   </svg>
                 </button>
                 <div class="spinner-border text-primary" role="status" v-else>
-  <span class="sr-only">Loading...</span>
-</div>
+                  <span class="sr-only">Loading...</span>
+                </div>
               </div>
             </div>
           </form>
@@ -942,46 +945,37 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 
-import {ref} from "vue";
+import { ref } from "vue";
 export default {
   name: "ChatMessages",
   setup() {
     return {
       inputText: ref(""),
-      responseNotSend:ref(true),
-      responseArr:ref([]),
+      responseNotSend: ref(true),
+      responseArr: ref([]),
     };
   },
   methods: {
     async SendRequest(event) {
       event.preventDefault();
       console.log(this.inputText, "text");
-      this.responseNotSend=false;
-     this.error('Please Add some text');
-      // var dataa = {
-      //   model: "gpt-3.5-turbo",
-      //   messages: [{ role: "user", content: `${this.inputText}` }],
-      // };
-      // axios({
-      //   method: "POST",
-      //   url: `https://api.openai.com/v1/chat/completions`,
-      //   headers: {
-      //     Authorization: `Bearer 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`,
-      //   },
-      //   data: dataa,
-      // })
-      //   .then((response) => {
-      //     this.responseNotSend=true;
-      //     console.log(response,'This is chat gpt response');
-      //     this.responseArr=response.data.choice;
-
-      //     console.log(this.responseArr,'arr');
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //   });
+      this.responseNotSend = false;
+      console.log(`Bearer ${localStorage.getItem("token")}`, "token");
+      var thiss=this;
+      axios
+        .post("http://localhost:4001/conv-chat", {
+          id: '6401e30dcd247c47d8a0ab40',
+          token: localStorage.getItem('token'),
+        })
+        .then(function (response) {
+          console.log(response,'this is res')
+          thiss.responseNotSend=true;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };
