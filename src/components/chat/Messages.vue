@@ -211,7 +211,15 @@
         <!-- Chat: Header -->
 
         <!-- All message content start here -->
-
+        <div class="alert alert-info" role="alert" v-if="!responseNotSend">
+          <h4 class="alert-heading">Thanks for your query!</h4>
+          <p>
+            Our system is working on your query and we shortly response you
+            back. Thanks for your wait.
+          </p>
+          <hr />
+          <p class="mb-0">{{ inputText }}</p>
+        </div>
         <!-- Chat: Content -->
         <div
           class="chat-body hide-scrollbar flex-1 h-100"
@@ -222,22 +230,15 @@
             <div class="py-6 py-lg-12 mb-15 pb-15">
               <!-- Message -->
               <div class="message" v-for="list in responseArr" :key="list">
-                <a
-                  href="#"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-user-profile"
-                  class="avatar avatar-responsive"
-                >
-                  <img
-                    class="avatar-img"
-                    src="assets/img/avatars/11.jpg"
-                    alt=""
-                  />
-                </a>
                 <div class="message-innerr">
                   <div class="message-body">
                     <div class="message-content">
                       <div class="message-text">
+                        <blockquote class="blockquote overflow-auto">
+                          <p class="small">
+                            {{ list.query_text }}
+                          </p>
+                        </blockquote>
                         <VMarkdownView
                           :mode="mode"
                           :content="list.ans.choices[0].message.content"
@@ -245,18 +246,25 @@
                           class="q-pa-md pa-5"
                         ></VMarkdownView>
                       </div>
-                      <!-- Dropdown -->
                     </div>
                   </div>
                   <div class="message-footer">
-                    <span class="extra-small text-muted">09:45 PM</span>
+                    <span class="extra-small text-muted">{{formateDate(list.createdAt)}}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div v-else class="spinner-border text-primary message-spinner" role="status">
-            <span class="visually-hidden">Loading...</span>
+          <div v-else>
+            <div
+              class="spinner-border text-primary message-spinner"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="no-message"
+              >Please click on conversations to see queries.</span
+            >
           </div>
         </div>
 
@@ -378,7 +386,7 @@
 import axios from "axios";
 import { EventBus } from "@/js/helpers/EventBus.js";
 import { ref } from "vue";
-
+import moment from "moment";
 import { VMarkdownView } from "vue3-markdown";
 import "vue3-markdown/dist/style.css";
 
@@ -402,6 +410,9 @@ export default {
   },
   components: { VMarkdownView },
   methods: {
+    formateDate(date) {
+      return moment(date).format("MMMM Do YYYY hh:mm:ss");
+    },
     async SendRequest(event) {
       event.preventDefault();
       this.responseNotSend = false;
@@ -446,10 +457,16 @@ export default {
   padding: 6px !important;
   background-color: #f6f9fb !important;
 }
-.message-spinner{
-  display:flex;
-  position:absolute;
-  top:50%;
-  left:50%;
+.message-spinner {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.no-message {
+  display: flex;
+  position: absolute;
+  top: 55%;
+  left: 38%;
 }
 </style>

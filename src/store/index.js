@@ -10,6 +10,9 @@ export default createStore({
     createPersistedState()
   ],
   getters: {
+
+      getUser:state=>state.user
+    
   },
   mutations: {
     setLoginResponse(state,payload)
