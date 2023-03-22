@@ -129,6 +129,8 @@ export default ({
      EventBus.on('conversation-messages',(data)=>{
         this.convId=data[0].conversation_id;
      })
+
+     localStorage.getItem('token')?'':this.$router.push('/login');
   }
 });
 </script>

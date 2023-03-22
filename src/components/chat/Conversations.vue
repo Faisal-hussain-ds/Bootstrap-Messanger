@@ -82,7 +82,7 @@
                           }}</span>
                         </div>
                         <div class="d-flex align-items-center">
-                          <div class="line-clamp me-auto"></div>
+                          <div class="line-clamp me-auto">{{item.messages[0]['ans']['choices'][0].message.content.substring(0, 30) + "..."}}</div>
                           <div class="badge badge-circle bg-primary ms-5">
                             <span></span>
                           </div>
@@ -131,7 +131,9 @@ export default {
       var thiss = this;
       axios
         .get(
-          `http://localhost:4001/conv/all/6401e30dcd247c47d8a0ab40?token=${localStorage.getItem(
+          `http://localhost:4001/conv/all/${localStorage.getItem(
+            "userId"
+          )}?token=${localStorage.getItem(
             "token"
           )}`,
           {

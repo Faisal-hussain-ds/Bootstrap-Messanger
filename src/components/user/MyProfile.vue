@@ -1,6 +1,6 @@
 <template>
   <div
-    class="modal fade"
+    class="modal"
     id="modal-profile"
     tabindex="-1"
     aria-labelledby="modal-profile"
@@ -43,6 +43,7 @@
                   class="btn-close btn-close-white btn-close-arrow opacity-100"
                   data-bs-dismiss="modal"
                   aria-label="Close"
+                  ref="btnCloseArrow"
                 ></button>
               </div>
             </div>
@@ -55,7 +56,6 @@
                 />
               </div>
               <h4 class="mb-1 text-capitalize">{{ getUser.first_name }}</h4>
-             
             </div>
           </div>
           <!-- Header -->
@@ -96,7 +96,7 @@
           <hr class="hr-bold modal-gx-n my-0" />
           <!-- List -->
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">
+            <li class="list-group-item" @click="logout">
               <a href="#" class="text-danger">Logout</a>
             </li>
           </ul>
@@ -109,16 +109,25 @@
 </template>
 
 <script>
+
 import { mapGetters } from "vuex";
 export default {
   name: "MyProfile",
+  setup() {
+    return {
+
+    };
+  },
   computed: {
     ...mapGetters(["getUser"]),
   },
   methods: {
     logout() {
-      //   localStrorage.setItem('userId',"");
-      //   localStrorage.setItem('token',"");
+     
+      localStorage.setItem("userId", "");
+      localStorage.setItem("token", "");
+       this.$refs.btnCloseArrow.click(); 
+      this.$router.push("/login");
     },
   },
 };
