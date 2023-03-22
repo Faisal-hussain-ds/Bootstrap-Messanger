@@ -265,6 +265,7 @@
             <span class="no-message"
               >Please click on conversations to see queries.</span
             >
+            <AudioRecorder v-show="false"/>
           </div>
         </div>
 
@@ -389,7 +390,7 @@ import { ref } from "vue";
 import moment from "moment";
 import { VMarkdownView } from "vue3-markdown";
 import "vue3-markdown/dist/style.css";
-
+import AudioRecorder from "../recorder/AudioRecorder";
 const mycontent = `Hi, How can I help you?`;
 export default {
   name: "ChatMessages",
@@ -408,7 +409,7 @@ export default {
       responseArr: ref([]),
     };
   },
-  components: { VMarkdownView },
+  components: { VMarkdownView , AudioRecorder},
   methods: {
     formateDate(date) {
       return moment(date).format("MMMM Do YYYY hh:mm:ss");
