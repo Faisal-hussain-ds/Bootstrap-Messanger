@@ -213,8 +213,12 @@
         <!-- All message content start here -->
 
         <!-- Chat: Content -->
-        <div class="chat-body hide-scrollbar flex-1 h-100" id="containerDiv" ref="msgContainer">
-          <div class="chat-body-inner" >
+        <div
+          class="chat-body hide-scrollbar flex-1 h-100"
+          id="containerDiv"
+          ref="msgContainer"
+        >
+          <div class="chat-body-inner" v-if="responseArr.length > 0">
             <div class="py-6 py-lg-12 mb-15 pb-15">
               <!-- Message -->
               <div class="message" v-for="list in responseArr" :key="list">
@@ -250,6 +254,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div v-else class="spinner-border text-primary message-spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
 
@@ -302,6 +309,7 @@
                     data-autosize="true"
                     v-model="inputText"
                   ></textarea>
+
                   <a
                     href="#"
                     class="input-group-text text-body pe-0"
@@ -367,64 +375,66 @@
 </template>
 
 <script>
-  import axios from "axios";
-   import { EventBus } from "@/js/helpers/EventBus.js";
-  import { ref } from "vue";
+import axios from "axios";
+import { EventBus } from "@/js/helpers/EventBus.js";
+import { ref } from "vue";
 
-  import { VMarkdownView } from "vue3-markdown";
-  import "vue3-markdown/dist/style.css";
+import { VMarkdownView } from "vue3-markdown";
+import "vue3-markdown/dist/style.css";
 
-  const mycontent = `Hi, How can I help you?`;
-  export default {
-    name: "ChatMessages",
-    setup() {
-      return {
-        content: ref(mycontent),
-        mode: "light",
-        inputText: ref(""),
-        responseNotSend: ref(true),
-        responseArr: ref([]),
-      };
+const mycontent = `Hi, How can I help you?`;
+export default {
+  name: "ChatMessages",
+  props: {
+    convId: {
+      type: String,
+      default: null,
     },
-    components: { VMarkdownView },
-    methods: {
-      async SendRequest(event) {
-        event.preventDefault();
-        this.responseNotSend = false;
-        console.log(`Bearer ${localStorage.getItem("token")}`, "token");
-        var thiss = this;
-        axios
-          .post("http://localhost:4001/conv-chat", {
-            id: "6401e30dcd247c47d8a0ab40",
-            query: thiss.inputText,
-            token: localStorage.getItem("token"),
-          })
-          .then(function (response) {
-            console.log(response, "this is res");
-            thiss.responseNotSend = true;
-            thiss.inputText = "";
-            thiss.content = response.data;
-            thiss.responseArr.push(thiss.content);
+  },
+  setup() {
+    return {
+      content: ref(mycontent),
+      mode: "light",
+      inputText: ref(""),
+      responseNotSend: ref(true),
+      responseArr: ref([]),
+    };
+  },
+  components: { VMarkdownView },
+  methods: {
+    async SendRequest(event) {
+      event.preventDefault();
+      this.responseNotSend = false;
+      console.log(`Bearer ${localStorage.getItem("token")}`, "token");
+      var thiss = this;
+      axios
+        .post("http://localhost:4001/conv-chat", {
+          conv_id: thiss.convId,
+          id: localStorage.getItem("userId"),
+          query: thiss.inputText,
+          token: localStorage.getItem("token"),
+        })
+        .then(function (response) {
+          console.log(response, "this is res");
+          thiss.responseNotSend = true;
+          thiss.inputText = "";
+          thiss.content = response.data;
+          thiss.responseArr.push(thiss.content);
 
-            var container = thiss.$el.querySelector("#containerDiv");
-            container.scrollTop = container.scrollHeight;
-
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      },
-
-      
+          var container = thiss.$el.querySelector("#containerDiv");
+          container.scrollTop = container.scrollHeight;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
-    mounted()
-    {
-     
-      EventBus.on('conversation-messages',(data)=>{
-        this.responseArr=data;
-      })
-    }
-  };
+  },
+  mounted() {
+    EventBus.on("conversation-messages", (data) => {
+      this.responseArr = data;
+    });
+  },
+};
 </script>
 
 <style scoped>
@@ -435,5 +445,11 @@
 .markdown-body {
   padding: 6px !important;
   background-color: #f6f9fb !important;
+}
+.message-spinner{
+  display:flex;
+  position:absolute;
+  top:50%;
+  left:50%;
 }
 </style>

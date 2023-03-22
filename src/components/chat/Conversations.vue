@@ -54,12 +54,13 @@
                 <a
                   href="#"
                   class="card border-0 text-reset"
-                  v-for="item in responseArr"
+                  v-for="(item, index) in responseArr"
                   :key="item._id"
                 >
                   <div
                     class="card-body"
-                    @click="getConversationMessages(item._id)"
+                    :class="index === activeIndex?'activeClass':''"
+                    @click="getConversationMessages(item._id,index)"
                   >
                     <div class="row gx-5">
                       <div class="col-auto">
@@ -73,18 +74,17 @@
                       </div>
                       <div class="col">
                         <div class="d-flex align-items-center mb-3">
-                          <h5 class="me-auto mb-0">William Wright</h5>
-                          <span class="text-muted extra-small ms-2"
-                            >12:45 PM</span
-                          >
+                          <h5 class="me-auto mb-0">
+                            Conversation {{ index + 1 }}
+                          </h5>
+                          <span class="text-muted extra-small ms-2">{{
+                            formateDate(item.createdAt)
+                          }}</span>
                         </div>
                         <div class="d-flex align-items-center">
-                          <div class="line-clamp me-auto">
-                            Hello! Yeah, I'm going to meet my friend of mine at
-                            the departments stores now.
-                          </div>
+                          <div class="line-clamp me-auto"></div>
                           <div class="badge badge-circle bg-primary ms-5">
-                            <span>3</span>
+                            <span></span>
                           </div>
                         </div>
                       </div>
@@ -105,7 +105,8 @@
 <script>
 import axios from "axios";
 import { ref } from "vue";
- import { EventBus } from "@/js/helpers/EventBus.js";
+import { EventBus } from "@/js/helpers/EventBus.js";
+import moment from "moment";
 
 // http://localhost:4001/conv/6411ac9cd3bed18503a9e9d6
 export default {
@@ -114,10 +115,18 @@ export default {
     return {
       responseArr: ref([]),
       messagesArr: ref([]),
+      activeIndex:ref(),
     };
   },
 
   methods: {
+    setActive(index) {
+      this.activeIndex = index;
+    },
+    formateDate(date)
+    {
+      return moment(date).format('MMMM Do YYYY');
+    },
     getConversations() {
       var thiss = this;
       axios
@@ -137,7 +146,8 @@ export default {
           console.log(error);
         });
     },
-    getConversationMessages(convId) {
+    getConversationMessages(convId,index) {
+      this.setActive(index);
       var thiss = this;
       axios
         .get(
@@ -152,7 +162,7 @@ export default {
           console.log(response, "this is all messages of conv res");
           thiss.messagesArr = response.data;
 
-          EventBus.emit('conversation-messages',thiss.messagesArr);
+          EventBus.emit("conversation-messages", thiss.messagesArr);
         })
         .catch(function (error) {
           console.log(error);
@@ -164,3 +174,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.activeClass{
+  border: 1px solid blue !important;
+  border-radius:5px !important
+}
+</style>

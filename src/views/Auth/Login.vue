@@ -93,6 +93,7 @@ export default {
         .then(function (response) {
           thiss.setLoginResponse(response.data);
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("userId", response.data._id);
           thiss.$router.push("/");
         })
         .catch(function (error) {

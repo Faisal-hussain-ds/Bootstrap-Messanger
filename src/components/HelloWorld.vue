@@ -8,7 +8,7 @@
          <UserCoversations v-show="true"/>
          <!-- Sidebar -->
          <!-- Chat -->
-          <Messages v-show="true"/>
+          <Messages :convId="convId" v-show="true"/>
          <!-- Chat -->
          <!-- Chat: Info -->
          <ChatInfo v-show="true"/>
@@ -101,6 +101,8 @@
 </template>
 
 <script>
+import {ref} from "vue";
+ import { EventBus } from "@/js/helpers/EventBus.js";
 
 import SideBar from "../components/layout/Sidebar.vue";
 import UserCoversations from "../components/chat/Conversations";
@@ -116,6 +118,18 @@ export default ({
   props: {
     msg: String,
   },
+  setup()
+  {
+     return{
+        convId:ref(""),
+     }
+  },
+  mounted()
+  {
+     EventBus.on('conversation-messages',(data)=>{
+        this.convId=data[0].conversation_id;
+     })
+  }
 });
 </script>
 
