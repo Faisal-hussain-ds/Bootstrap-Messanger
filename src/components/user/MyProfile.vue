@@ -109,24 +109,20 @@
 </template>
 
 <script>
-
 import { mapGetters } from "vuex";
 export default {
   name: "MyProfile",
   setup() {
-    return {
-
-    };
+    return {};
   },
   computed: {
     ...mapGetters(["getUser"]),
   },
   methods: {
     logout() {
-     
       localStorage.setItem("userId", "");
       localStorage.setItem("token", "");
-       this.$refs.btnCloseArrow.click(); 
+      this.$refs.btnCloseArrow.click();
       this.$router.push("/login");
     },
   },
