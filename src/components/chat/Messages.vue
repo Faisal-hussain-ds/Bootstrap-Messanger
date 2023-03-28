@@ -268,7 +268,6 @@
             <AudioRecorder v-show="false"/>
           </div>
         </div>
-
         <!-- Chat: Content -->
         <!-- Chat: Footer -->
         <div
